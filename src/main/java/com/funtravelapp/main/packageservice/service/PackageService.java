@@ -1,7 +1,7 @@
-package com.funtravelapp.main.service;
+package com.funtravelapp.main.packageservice.service;
 
-import com.funtravelapp.main.model.Package;
-import com.funtravelapp.main.repository.PackageRepository;
+import com.funtravelapp.main.packageservice.entity.Package;
+import com.funtravelapp.main.packageservice.repository.PackageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

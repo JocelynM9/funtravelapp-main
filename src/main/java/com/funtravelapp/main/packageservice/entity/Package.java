@@ -1,4 +1,4 @@
-package com.funtravelapp.main.model;
+package com.funtravelapp.main.packageservice.entity;
 
 import jakarta.persistence.*;
 
