@@ -15,12 +15,84 @@ public class RegisterServiceImpl implements RegisterService {
     @Autowired
     UserRepository userRepository;
 
+//    @Override
+//    public ResponseEntity<String> insertNewCustomer(RegisterInputDTO registerInputDTO) {
+//        if(registerInputDTO.getUsername().isBlank()
+//                || registerInputDTO.getEmail().isBlank()
+//                || registerInputDTO.getPassword().isBlank()
+//                || registerInputDTO.getConfirmPassword().isBlank()
+//        )
+//        {
+//            return new ResponseEntity<String>("Please fill empty blanks!", HttpStatus.BAD_REQUEST);
+//        }
+//        //check if username already exists in database
+//        if(userRepository.existsByUsername(registerInputDTO.getUsername())){
+//            return new ResponseEntity<String>("Username is already taken!", HttpStatus.BAD_REQUEST);
+//        }
+//        //check if email already exists in database
+//        if(userRepository.existsByEmail(registerInputDTO.getEmail())){
+//            return new ResponseEntity<String>("Email is already taken!", HttpStatus.BAD_REQUEST);
+//        }
+//        //check if password and confirmPassword don't match
+//        if(!registerInputDTO.getPassword().equals(registerInputDTO.getConfirmPassword())){
+//            return new ResponseEntity<String>("Password doesn't match", HttpStatus.BAD_REQUEST);
+//        }
+//
+//        //create new user customer
+//        User user = new User();
+//        user.setId(0);
+//        user.setUsername(registerInputDTO.getUsername());
+//        user.setEmail(registerInputDTO.getEmail());
+//        user.setPassword(registerInputDTO.getPassword());
+//        user.setRole("Customer");
+//        userRepository.save(user);
+//
+//        return new ResponseEntity<String>("Sucessfully created new customer account!", HttpStatus.OK);
+//    }
+//
+//    @Override
+//    public ResponseEntity<String> insertNewSeller(RegisterInputDTO registerInputDTO) {
+//        if(registerInputDTO.getUsername().isBlank()
+//                || registerInputDTO.getEmail().isBlank()
+//                || registerInputDTO.getPassword().isBlank()
+//                || registerInputDTO.getConfirmPassword().isBlank()
+//        )
+//        {
+//            return new ResponseEntity<String>("Please fill empty blanks!", HttpStatus.BAD_REQUEST);
+//        }
+//        //check if username already exists in database
+//        if(userRepository.existsByUsername(registerInputDTO.getUsername())){
+//            return new ResponseEntity<String>("Username is already taken!", HttpStatus.BAD_REQUEST);
+//        }
+//        //check if email already exists in database
+//        if(userRepository.existsByEmail(registerInputDTO.getEmail())){
+//            return new ResponseEntity<String>("Email is already taken!", HttpStatus.BAD_REQUEST);
+//        }
+//        //check if password and confirmPassword don't match
+//        if(!registerInputDTO.getPassword().equals(registerInputDTO.getConfirmPassword())){
+//            return new ResponseEntity<String>("Password doesn't match", HttpStatus.BAD_REQUEST);
+//        }
+//
+//        //create new user seller
+//        User user = new User();
+//        user.setId(0);
+//        user.setUsername(registerInputDTO.getUsername());
+//        user.setEmail(registerInputDTO.getEmail());
+//        user.setPassword(registerInputDTO.getPassword());
+//        user.setRole("Seller");
+//        userRepository.save(user);
+//
+//        return new ResponseEntity<>("Sucessfully created new seller account!", HttpStatus.OK);
+//    }
+
     @Override
-    public ResponseEntity<String> insertNewCustomer(RegisterInputDTO registerInputDTO) {
+    public ResponseEntity<String> insert(RegisterInputDTO registerInputDTO) {
+
         if(registerInputDTO.getUsername().isBlank()
                 || registerInputDTO.getEmail().isBlank()
                 || registerInputDTO.getPassword().isBlank()
                 || registerInputDTO.getConfirmPassword().isBlank()
+                || registerInputDTO.getRole().isBlank()
         )
         {
             return new ResponseEntity<String>("Please fill empty blanks!", HttpStatus.BAD_REQUEST);
@@ -44,44 +116,11 @@ public class RegisterServiceImpl implements RegisterService {
         user.setUsername(registerInputDTO.getUsername());
         user.setEmail(registerInputDTO.getEmail());
         user.setPassword(registerInputDTO.getPassword());
-        user.setRole("Customer");
+        user.setRole(registerInputDTO.getRole());
         userRepository.save(user);
 
-        return new ResponseEntity<String>("Sucessfully created new customer account!", HttpStatus.OK);
+        return new ResponseEntity<>("Sucessfully created new account!", HttpStatus.OK);
     }
 
-    @Override
-    public ResponseEntity<String> insertNewSeller(RegisterInputDTO registerInputDTO) {
-        if(registerInputDTO.getUsername().isBlank()
-                || registerInputDTO.getEmail().isBlank()
-                || registerInputDTO.getPassword().isBlank()
-                || registerInputDTO.getConfirmPassword().isBlank()
-        )
-        {
-            return new ResponseEntity<String>("Please fill empty blanks!", HttpStatus.BAD_REQUEST);
-        }
-        //check if username already exists in database
-        if(userRepository.existsByUsername(registerInputDTO.getUsername())){
-            return new ResponseEntity<String>("Username is already taken!", HttpStatus.BAD_REQUEST);
-        }
-        //check if email already exists in database
-        if(userRepository.existsByEmail(registerInputDTO.getEmail())){
-            return new ResponseEntity<String>("Email is already taken!", HttpStatus.BAD_REQUEST);
-        }
-        //check if password and confirmPassword don't match
-        if(!registerInputDTO.getPassword().equals(registerInputDTO.getConfirmPassword())){
-            return new ResponseEntity<String>("Password doesn't match", HttpStatus.BAD_REQUEST);
-        }
 
-        //create new user seller
-        User user = new User();
-        user.setId(0);
-        user.setUsername(registerInputDTO.getUsername());
-        user.setEmail(registerInputDTO.getEmail());
-        user.setPassword(registerInputDTO.getPassword());
-        user.setRole("Seller");
-        userRepository.save(user);
-
-        return new ResponseEntity<>("Sucessfully created new seller account!", HttpStatus.OK);
-    }
 }

@@ -14,5 +14,7 @@ public class RegisterInputDTO {
     private String password;
     @JsonProperty(value = "confirmPassword")
     private String confirmPassword;
+    @JsonProperty(value = "role")
+    private String role;
 
 }
