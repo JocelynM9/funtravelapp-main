@@ -1,5 +1,6 @@
 package com.funtravelapp.main.cartservice.service.impl;
 
+import com.funtravelapp.main.cartservice.dto.NewCartDTO;
 import com.funtravelapp.main.cartservice.entity.Cart;
 import com.funtravelapp.main.cartservice.repository.CartRepository;
 import com.funtravelapp.main.cartservice.service.CartService;
@@ -8,8 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class CartServiceImpl implements CartService {
 
@@ -17,13 +16,19 @@ public class CartServiceImpl implements CartService {
     CartRepository cartRepository;
 
     @Override
-    public void save(Cart cart) {
-
+    public ResponseEntity<?> save(NewCartDTO cart) {
+        Cart aCart = new Cart();
+        aCart.setCartId(0);
+        aCart.setCustomerId(cart.getCustomerId());
+        aCart.setSellerId(cart.getSellerId());
+        aCart.setPackageId(cart.getPackageId());
+        cartRepository.save(aCart);
+        return new ResponseEntity<>("Added to Cart!", HttpStatus.OK);
     }
 
     @Override
-    public List<Cart> findAllByCustomerId(int customerId) {
-        return cartRepository.findCartByCustomerId(customerId);
+    public ResponseEntity<?> findAllByCustomerId(int customerId) {
+        return new ResponseEntity<>(cartRepository.findCartByCustomerId(customerId), HttpStatus.OK);
     }
 
     @Override
