@@ -51,7 +51,7 @@ public class PackageServiceImpl implements PackageService {
 
     @Override
     public ResponseEntity<?> uploadImage(MultipartFile file) throws IOException {
-        String folder = "/photos/";
+        String folder = "./src/main/resources/images/";
         String fileName = file.getOriginalFilename();
         Path path = Paths.get(folder + fileName);
         Files.write(path, file.getBytes());
