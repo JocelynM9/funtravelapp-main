@@ -19,10 +19,10 @@ public class UserToken {
 
     @Id
     @Column(name = "token_id")
-    private int tokenId;
+    private Integer tokenId;
 
     @Column(name = "user_id")
-    private int userId;
+    private Integer userId;
 
     @Column(name = "token")
     private String token;

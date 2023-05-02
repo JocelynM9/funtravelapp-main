@@ -11,7 +11,7 @@ public class PackageInputDTO {
     private String name;
 
     @JsonProperty("userId")
-    private int userId;
+    private Integer userId;
 
     @JsonProperty("description")
     private String description;

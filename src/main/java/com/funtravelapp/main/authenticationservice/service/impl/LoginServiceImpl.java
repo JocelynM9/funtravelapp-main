@@ -5,11 +5,9 @@ import com.funtravelapp.main.authenticationservice.entity.UserToken;
 import com.funtravelapp.main.authenticationservice.exception.UserNotFoundException;
 import com.funtravelapp.main.authenticationservice.repository.UserRepository;
 import com.funtravelapp.main.authenticationservice.repository.UserTokenRepository;
-import com.funtravelapp.main.authenticationservice.config.JwtGeneratorInterface;
+import com.funtravelapp.main.authenticationservice.jwt.service.JwtGeneratorInterface;
 import com.funtravelapp.main.authenticationservice.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -28,14 +26,17 @@ public class LoginServiceImpl implements LoginService {
 
 
     @Override
-    public ResponseEntity<?> saveUserSession(User mUser) throws UserNotFoundException {
+    public UserToken saveUserSession(User mUser) throws Exception {
 
-        User user = userRepository.findByUsername(mUser.getUsername());
-        if(mUser == null){
-            throw new UserNotFoundException("UserName or Password is Invalid");
+        User user = userRepository.findByUsernameAndPassword(mUser.getUsername(), mUser.getPassword());
+
+
+        if(userTokenRepository.existsByUserId(user.getId())){
+            throw new Exception("Already Logged in!");
+
         }
 
-        String setToken = jwtGenerator.generateToken(mUser);
+        String setToken = jwtGenerator.generateToken(user);
 
         UserToken userToken = new UserToken();
         userToken.setTokenId(0);
@@ -43,18 +44,25 @@ public class LoginServiceImpl implements LoginService {
         userToken.setToken(setToken);
         userToken.setExpiredTime(LocalDateTime.now().plusMinutes(10));
         userToken.setExpired(false);
-        userTokenRepository.save(userToken);
 
-        return new ResponseEntity<>("Login Successfully", HttpStatus.OK);
+        return userTokenRepository.save(userToken);
+
     }
 
     @Override
     public User getUserByNameAndPassword(String name, String password) throws UserNotFoundException {
         User user = userRepository.findByUsernameAndPassword(name, password);
         if(user == null){
-            throw new UserNotFoundException("Invalid id and password");
+            throw new UserNotFoundException("Invalid username or password");
         }
         return user;
+    }
+
+    @Override
+    public String logout(Integer id) {
+        UserToken token = userTokenRepository.findUserTokenByUserId(id);
+        userTokenRepository.delete(token);
+        return "Logged out!";
     }
 
 

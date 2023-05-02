@@ -86,7 +86,7 @@ public class RegisterServiceImpl implements RegisterService {
 //    }
 
     @Override
-    public ResponseEntity<String> insert(RegisterInputDTO registerInputDTO) {
+    public User insert(RegisterInputDTO registerInputDTO) throws Exception{
 
         if(registerInputDTO.getUsername().isBlank()
                 || registerInputDTO.getEmail().isBlank()
@@ -95,19 +95,19 @@ public class RegisterServiceImpl implements RegisterService {
                 || registerInputDTO.getRole().isBlank()
         )
         {
-            return new ResponseEntity<String>("Please fill empty blanks!", HttpStatus.BAD_REQUEST);
+            throw new Exception("Please fill empty blanks!");
         }
         //check if username already exists in database
         if(userRepository.existsByUsername(registerInputDTO.getUsername())){
-            return new ResponseEntity<String>("Username is already taken!", HttpStatus.BAD_REQUEST);
+            throw new Exception("Username is already taken!");
         }
         //check if email already exists in database
         if(userRepository.existsByEmail(registerInputDTO.getEmail())){
-            return new ResponseEntity<String>("Email is already taken!", HttpStatus.BAD_REQUEST);
+            throw new Exception("Email is already taken!");
         }
         //check if password and confirmPassword don't match
         if(!registerInputDTO.getPassword().equals(registerInputDTO.getConfirmPassword())){
-            return new ResponseEntity<String>("Password doesn't match", HttpStatus.BAD_REQUEST);
+            throw new Exception("Password doesn't match");
         }
 
         //create new user customer
@@ -117,9 +117,9 @@ public class RegisterServiceImpl implements RegisterService {
         user.setEmail(registerInputDTO.getEmail());
         user.setPassword(registerInputDTO.getPassword());
         user.setRole(registerInputDTO.getRole());
-        userRepository.save(user);
 
-        return new ResponseEntity<>("Sucessfully created new account!", HttpStatus.OK);
+
+        return userRepository.save(user);
     }
 
 

@@ -9,8 +9,10 @@ import java.util.List;
 
 @Repository
 public interface PackageRepository extends JpaRepository<Package, Integer> {
-    @Query("SELECT p FROM Package p WHERE p.userId = ?1")
-    List<Package> findAllByUserId(Integer userId);
 
-    Package findPackageById(int packageId);
+
+    Package findPackageById(Integer packageId);
+
+    List<Package> findByUserId(Integer id);
+
 }

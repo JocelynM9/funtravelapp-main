@@ -4,6 +4,8 @@ import com.funtravelapp.main.cartservice.dto.NewCartDTO;
 import com.funtravelapp.main.cartservice.entity.Cart;
 import com.funtravelapp.main.cartservice.repository.CartRepository;
 import com.funtravelapp.main.cartservice.service.CartService;
+import com.funtravelapp.main.cartservice.service.KafkaService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,24 +17,31 @@ public class CartServiceImpl implements CartService {
     @Autowired
     CartRepository cartRepository;
 
+
     @Override
-    public ResponseEntity<?> save(NewCartDTO cart) {
+    @Transactional
+    public Cart save(NewCartDTO cart) throws Exception{
         Cart aCart = new Cart();
+
+        if(cart.getCustomerId().equals(0) || cart.getSellerId().equals(0)
+        || cart.getPackageId().equals(0)){
+            throw new Exception("400");
+        }
+
         aCart.setCartId(0);
         aCart.setCustomerId(cart.getCustomerId());
         aCart.setSellerId(cart.getSellerId());
         aCart.setPackageId(cart.getPackageId());
-        cartRepository.save(aCart);
-        return new ResponseEntity<>("Added to Cart!", HttpStatus.OK);
+        return cartRepository.save(aCart);
     }
 
     @Override
-    public ResponseEntity<?> findAllByCustomerId(int customerId) {
+    public ResponseEntity<?> findAllByCustomerId(Integer customerId) {
         return new ResponseEntity<>(cartRepository.findCartByCustomerId(customerId), HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<?> delete(int customerId, int packageId) {
+    public ResponseEntity<?> delete(Integer customerId, Integer packageId) {
         Cart cart = new Cart();
         cart.setCustomerId(customerId);
         cart.setPackageId(packageId);

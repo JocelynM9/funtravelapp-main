@@ -17,14 +17,14 @@ public class Cart {
 
     @Id
     @Column(name = "cart_id")
-    private int cartId;
+    private Integer cartId;
 
     @Column(name = "customer_id")
-    private int customerId;
+    private Integer customerId;
 
     @Column(name = "seller_id")
-    private int sellerId;
+    private Integer sellerId;
 
     @Column(name = "package_id")
-    private int packageId;
+    private Integer packageId;
 }
