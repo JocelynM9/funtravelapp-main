@@ -4,12 +4,13 @@ import com.funtravelapp.main.cartservice.dto.NewCartDTO;
 import com.funtravelapp.main.cartservice.entity.Cart;
 import com.funtravelapp.main.cartservice.repository.CartRepository;
 import com.funtravelapp.main.cartservice.service.CartService;
-import com.funtravelapp.main.cartservice.service.KafkaService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -36,21 +37,20 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public ResponseEntity<?> findAllByCustomerId(Integer customerId) {
-        return new ResponseEntity<>(cartRepository.findCartByCustomerId(customerId), HttpStatus.OK);
+    public List<Cart> findAllByCustomerId(Integer customerId) {
+        return cartRepository.findCartByCustomerId(customerId);
     }
 
     @Override
-    public ResponseEntity<?> delete(Integer customerId, Integer packageId) {
+    public void delete(Integer customerId, Integer packageId) throws Exception {
         Cart cart = new Cart();
         cart.setCustomerId(customerId);
         cart.setPackageId(packageId);
 
         if(cartRepository.existsByCustomerIdAndPackageId(cart.getCustomerId(), cart.getPackageId()) == null){
-            return new ResponseEntity<>("Not Found", HttpStatus.BAD_REQUEST);
+            throw new Exception("Nothing to delete!");
         }else{
             cartRepository.delete(cart);
-            return new ResponseEntity<>("Deleted!", HttpStatus.OK);
         }
 
     }

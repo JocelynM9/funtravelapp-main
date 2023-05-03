@@ -31,13 +31,26 @@ public class CartController {
 
     @GetMapping("/all/{customerId}")
     public ResponseEntity<?> allByCustomerId(@PathVariable("customerId") int customerId){
-        return cartService.findAllByCustomerId(customerId);
+        try{
+            return ResponseMapper.ok(null, cartService.findAllByCustomerId(customerId));
+        }catch(Exception e){
+            e.printStackTrace();
+            return ResponseMapper.badRequest(e.getMessage(), null);
+        }
+
     }
 
     @DeleteMapping("/delete/{customerId}/{packageId}")
     public ResponseEntity<?> deleteCartData(@PathVariable("customerId") int customerId,
                                             @PathVariable("packageId") int packageId){
-        return cartService.delete(customerId, packageId);
+
+        try{
+            cartService.delete(customerId, packageId);
+            return ResponseMapper.ok(null, null);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseMapper.badRequest(e.getMessage(), null);
+        }
 
     }
 
