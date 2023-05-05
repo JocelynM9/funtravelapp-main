@@ -18,6 +18,7 @@ public class CreateOrder {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
+    @Builder
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public static class OrderData{
         private Integer customerId;

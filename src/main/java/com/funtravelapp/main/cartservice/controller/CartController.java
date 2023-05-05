@@ -1,11 +1,12 @@
 package com.funtravelapp.main.cartservice.controller;
 
-import com.funtravelapp.main.cartservice.dto.CreateOrder;
 import com.funtravelapp.main.cartservice.dto.NewCartDTO;
 import com.funtravelapp.main.cartservice.service.CartService;
 import com.funtravelapp.main.cartservice.service.KafkaService;
 import com.funtravelapp.main.responseMapper.ResponseMapper;
+import com.funtravelapp.main.tokenAuth.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,20 +20,31 @@ public class CartController {
     @Autowired
     private KafkaService kafkaService;
 
+    @Autowired
+    private RoleService roleService;
+
     @PostMapping("/new")
-    public ResponseEntity<?> newCartData(@RequestBody NewCartDTO cart){
+    public ResponseEntity<?> newCartData(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+                                         @RequestBody NewCartDTO cart){
         try{
-            return ResponseMapper.ok(null, cartService.save(cart));
+            return ResponseMapper.ok(null, cartService.save(authorizationHeader,
+                    this.roleService.getCustomerAndSeller(),
+                    null,
+                    cart));
         }catch (Exception e){
             e.printStackTrace();
             return ResponseMapper.badRequest(e.getMessage(), null);
         }
     }
 
-    @GetMapping("/all/{customerId}")
-    public ResponseEntity<?> allByCustomerId(@PathVariable("customerId") int customerId){
+    @GetMapping("/all")
+    public ResponseEntity<?> allByCustomerId(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader){
         try{
-            return ResponseMapper.ok(null, cartService.findAllByCustomerId(customerId));
+            return ResponseMapper.ok(null, cartService.findAllByCustomerId(
+                    authorizationHeader,
+                    this.roleService.getCustomerAndSeller(),
+                    null
+            ));
         }catch(Exception e){
             e.printStackTrace();
             return ResponseMapper.badRequest(e.getMessage(), null);
@@ -40,12 +52,14 @@ public class CartController {
 
     }
 
-    @DeleteMapping("/delete/{customerId}/{packageId}")
-    public ResponseEntity<?> deleteCartData(@PathVariable("customerId") int customerId,
+    @DeleteMapping("/delete/{packageId}")
+    public ResponseEntity<?> deleteCartData(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
                                             @PathVariable("packageId") int packageId){
 
         try{
-            cartService.delete(customerId, packageId);
+            cartService.delete(authorizationHeader,
+                    this.roleService.getCustomerAndSeller(),
+                    null, packageId);
             return ResponseMapper.ok(null, null);
         }catch (Exception e){
             e.printStackTrace();
@@ -55,10 +69,12 @@ public class CartController {
     }
 
     @PostMapping("/create-order")
-    public ResponseEntity<?> createOrder(@RequestBody CreateOrder createOrder){
+    public ResponseEntity<?> createOrder(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader){
         try{
-            kafkaService.sendMessage(createOrder);
-            return ResponseMapper.ok(null, "Message sent!");
+
+            return ResponseMapper.ok(null, kafkaService.sendMessage(authorizationHeader,
+                    this.roleService.getCustomer(),
+                    null));
         }catch(Exception e){
             e.printStackTrace();
             return ResponseMapper.badRequest(e.getMessage(), null);

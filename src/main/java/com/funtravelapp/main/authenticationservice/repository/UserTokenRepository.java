@@ -14,6 +14,9 @@ public interface UserTokenRepository extends JpaRepository<UserToken, Integer> {
 
     @Query("SELECT ut FROM UserToken ut WHERE ut.userId = ?1")
     UserToken findUserTokenByUserId(Integer id);
+
+
+    Optional<UserToken> findByToken(String token);
 }
 
 

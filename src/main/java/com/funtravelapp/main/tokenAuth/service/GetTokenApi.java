@@ -8,7 +8,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 public class GetTokenApi {
-    @Value("${service.main.url}")
+
     private String mainURL;
 
     public GetTokenResponse getToken(String authorizationHeader) throws Exception {

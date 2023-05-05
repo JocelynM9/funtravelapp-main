@@ -22,9 +22,14 @@ public class  PackageController {
     RoleService roleService;
 
     @PostMapping("/insert")
-    public ResponseEntity<?> newPackage(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @RequestBody PackageInputDTO dto){
+    public ResponseEntity<?> newPackage(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+                                        @RequestBody PackageInputDTO dto){
         try {
-            return ResponseMapper.ok(null, packageService.insertNewPackage(authorizationHeader,dto));
+            return ResponseMapper.ok(null, packageService.insertNewPackage(
+                    authorizationHeader
+                    , this.roleService.getCustomerAndSeller()
+                    , null, dto
+            ));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseMapper.badRequest(e.getMessage(), null);
@@ -32,11 +37,15 @@ public class  PackageController {
     }
 
     @PostMapping("/uploadImage/{id}")
-    public ResponseEntity<?> uploadImage(@RequestParam("image")MultipartFile file,
+    public ResponseEntity<?> uploadImage(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+                                         @RequestParam("image")MultipartFile file,
                                          @PathVariable("id") Integer packageId) throws IOException {
         try{
             System.out.println("File: "+ file.getOriginalFilename());
-            return ResponseMapper.ok(null, packageService.uploadImage(file, packageId));
+            return ResponseMapper.ok(null, packageService.uploadImage(authorizationHeader,
+                    this.roleService.getCustomerAndSeller(),
+                    null,
+                    packageId, file));
         }catch (Exception e){
             e.printStackTrace();
             return ResponseMapper.badRequest(e.getMessage(), null);
@@ -45,10 +54,15 @@ public class  PackageController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updatePackage(@RequestBody PackageInputDTO dto,
-                                           @PathVariable("id") Integer id){
+    public ResponseEntity<?> updatePackage(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+                                           @PathVariable("id") Integer id,
+                                           @RequestBody PackageInputDTO dto){
         try {
-            return ResponseMapper.ok(null, packageService.updatePackage(dto, id));
+            return ResponseMapper.ok(null, packageService.updatePackage(authorizationHeader
+                    , this.roleService.getCustomerAndSeller()
+                    , null
+                    , id, dto
+            ));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseMapper.badRequest(e.getMessage(), null);
@@ -56,30 +70,37 @@ public class  PackageController {
     }
 
     @GetMapping("/all")
-    public @ResponseBody ResponseEntity<?> getAllPackages(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader){
+    public ResponseEntity<?> getAllPackages(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader){
         try{
-            return ResponseMapper.ok(null, packageService.allPackages());
+            return ResponseMapper.ok(null
+                    , packageService.allPackages(authorizationHeader
+                            , this.roleService.getCustomerAndSeller()
+                            , null));
         }catch (Exception e){
             e.printStackTrace();
             return ResponseMapper.badRequest(e.getMessage(), null);
         }
     }
 
-    @GetMapping("/all-by-id/{id}")
-    public @ResponseBody ResponseEntity<?> getAllByUserId(@PathVariable("id") Integer id){
-        try {
-            return ResponseMapper.ok(null, packageService.allPackageBySellerId(id));
-        }catch (Exception e){
-            e.printStackTrace();
-            return ResponseMapper.badRequest(e.getMessage(), null);
-        }
-
-    }
+//    @GetMapping("/all-by-id/{id}")
+//    public ResponseEntity<?> getAllByUserId(@PathVariable("id") Integer id){
+//        try {
+//            return ResponseMapper.ok(null, packageService.allPackageBySellerId(id));
+//        }catch (Exception e){
+//            e.printStackTrace();
+//            return ResponseMapper.badRequest(e.getMessage(), null);
+//        }
+//
+//    }
 
     @GetMapping("/get-package-by-id/{id}")
-    public ResponseEntity<?> getPackageById(@PathVariable("id") Integer id){
+    public ResponseEntity<?> getPackageById(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+                                            @PathVariable("id") Integer id){
         try{
-            return ResponseMapper.ok(null, packageService.getPackageById(id));
+            return ResponseMapper.ok(null, packageService.getPackageById(
+                    authorizationHeader,
+                    this.roleService.getCustomerAndSeller(),
+                    null, id));
         }catch (Exception e){
             e.printStackTrace();
             return ResponseMapper.badRequest(e.getMessage(), null);
@@ -87,9 +108,13 @@ public class  PackageController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Integer id){
+    public ResponseEntity<?> delete(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+                                    @PathVariable("id") Integer id){
         try{
-            packageService.delete(id);
+            packageService.delete(authorizationHeader,
+                    this.roleService.getCustomerAndSeller()
+                    ,null
+                    ,id);
             return ResponseMapper.ok(null, null);
         }catch (Exception e){
             e.printStackTrace();

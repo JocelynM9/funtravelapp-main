@@ -8,9 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NewCartDTO {
-    private Integer customerId;
-
-    private Integer sellerId;
 
     private Integer packageId;
 

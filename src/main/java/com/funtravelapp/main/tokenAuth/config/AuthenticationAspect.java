@@ -1,5 +1,9 @@
 package com.funtravelapp.main.tokenAuth.config;
 
+import com.funtravelapp.main.authenticationservice.entity.User;
+import com.funtravelapp.main.authenticationservice.entity.UserToken;
+import com.funtravelapp.main.authenticationservice.repository.UserRepository;
+import com.funtravelapp.main.authenticationservice.repository.UserTokenRepository;
 import com.funtravelapp.main.tokenAuth.dto.GetTokenResponse;
 import com.funtravelapp.main.tokenAuth.dto.GetUserDTO;
 import com.funtravelapp.main.tokenAuth.validator.StringValidator;
@@ -11,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Aspect
 @Component
@@ -19,13 +24,22 @@ public class AuthenticationAspect {
     @Autowired
     StringValidator stringValidator;
 
+    @Autowired
+    UserTokenRepository userTokenRepository;
+
+    @Autowired
+    UserRepository userRepository;
+
     @Pointcut("execution(* com.funtravelapp.main.packageservice.service.impl.PackageServiceImpl.*(..))")
     private void packageServiceAuth(){}
 
     @Pointcut("execution(* com.funtravelapp.main.cartservice.service.impl.CartServiceImpl.*(..))")
     private void cartServiceAuth(){}
 
-    @Around("packageServiceAuth() || cartServiceAuth()")
+    @Pointcut("execution(* com.funtravelapp.main.cartservice.service.impl.KafkaServiceImpl.*(..))")
+    private void kafkaServiceAuth(){}
+
+    @Around("packageServiceAuth() || cartServiceAuth() || kafkaServiceAuth()")
     public Object checkToken(ProceedingJoinPoint pjp) throws Throwable {
         Object[] args = pjp.getArgs();
 
@@ -40,24 +54,32 @@ public class AuthenticationAspect {
             throw new Exception("Unauthorized, invalid token");
         }
 
-        //        GetTokenResponse u = getTokenAPI.getToken(authHeader);
-        GetTokenResponse u = GetTokenResponse.builder()
-                .data(GetUserDTO.builder()
-                        .id(1)
-                        .email("user@gmail.com")
-                        .expiredToken("2023-01-01")
-                        .role("customer")
-                        .username("admin")
-                        .token("123")
-                        .build())
-                .build();
+        String token = authHeader.split(" ")[1];
+        System.out.println("Token : " + token);
+
+        Optional<UserToken> userToken = userTokenRepository.findByToken(token);
+
+        if(userToken.isEmpty()){
+            throw new Exception("Unauthorized, invalid token");
+        }
+
+        UserToken ut = userToken.get();
+
+        Optional<User> findUser = userRepository.findById(ut.getUserId());
+
+        if(findUser.isEmpty()){
+            throw new Exception("User not found!");
+        }
+
+        User u = findUser.get();
+
         Map<String, Boolean> allowedUser = (Map<String, Boolean>) args[1];
 
-        if (!allowedUser.get(u.getData().getRole().toLowerCase())){
+        if (!allowedUser.get(u.getRole().toLowerCase())){
             throw new Exception("Unauthorized, user not allowed!");
         }
 
-        args[2] = u.getData();
+        args[2] = u;
 
         return pjp.proceed(args);
     }
