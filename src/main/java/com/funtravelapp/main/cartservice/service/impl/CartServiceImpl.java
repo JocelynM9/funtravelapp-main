@@ -42,16 +42,10 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void delete(Integer customerId, Integer packageId) throws Exception {
-        Cart cart = new Cart();
-        cart.setCustomerId(customerId);
-        cart.setPackageId(packageId);
+    public void delete(Integer customerId, Integer packageId){
 
-        if(cartRepository.existsByCustomerIdAndPackageId(cart.getCustomerId(), cart.getPackageId()) == null){
-            throw new Exception("Nothing to delete!");
-        }else{
-            cartRepository.delete(cart);
-        }
+        Cart cart = cartRepository.findByCustomerIdAndPackageId(customerId, packageId);
+        cartRepository.delete(cart);
 
     }
 }

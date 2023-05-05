@@ -58,7 +58,7 @@ public class  PackageController {
     @GetMapping("/all")
     public @ResponseBody ResponseEntity<?> getAllPackages(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader){
         try{
-            return ResponseMapper.ok(null, packageService.allPackages(authorizationHeader,this.roleService.getCustomerAndSeller(), null));
+            return ResponseMapper.ok(null, packageService.allPackages());
         }catch (Exception e){
             e.printStackTrace();
             return ResponseMapper.badRequest(e.getMessage(), null);

@@ -46,14 +46,14 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public List<Package> allPackages(String authorizationHeader, Map<String, Boolean> roles, GetUserDTO userDTO) {
+    public List<Package> allPackages() {
         List<Package> packages;
-        System.out.println(userDTO);
-        if (userDTO.getRole().equalsIgnoreCase("customer")){
-            packages = repository.findAll();
-        }else {
-            packages = repository.findByUserId(userDTO.getId());
-        }
+        packages = repository.findAll();
+//        if (userDTO.getRole().equalsIgnoreCase("customer")){
+//            packages = repository.findAll();
+//        }else {
+//            packages = repository.findByUserId(userDTO.getId());
+//        }
         return packages;
     }
 
