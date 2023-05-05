@@ -7,6 +7,7 @@ import com.funtravelapp.main.authenticationservice.service.LoginService;
 import com.funtravelapp.main.authenticationservice.service.RegisterService;
 import com.funtravelapp.main.responseMapper.ResponseMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,6 +48,16 @@ public class AuthController {
     public ResponseEntity<?> logout(@PathVariable("id") Integer userId){
         try {
            return ResponseMapper.ok(null, loginService.logout(userId));
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseMapper.badRequest(e.getMessage(), HttpStatus.CONFLICT);
+        }
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<?> getUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader){
+        try{
+            return ResponseMapper.ok(null, loginService.getUser(authorizationHeader));
         }catch (Exception e){
             e.printStackTrace();
             return ResponseMapper.badRequest(e.getMessage(), HttpStatus.CONFLICT);
